@@ -19,7 +19,8 @@
   "homepage": "https://github.com/thesua7/ExpressBlog#readme",
   "dependencies": {
     "express": "^4.17.1",
-    "express-edge": "^2.0.0"
+    "express-edge": "^2.0.0",
+    "mongoose": "^5.7.1"
   },
   "devDependencies": {
     "nodemon": "^1.19.2"
