@@ -9,7 +9,8 @@ const mongoose = require('mongoose')
 //mongo variable
 mongoose.connect('mongodb://localhost/BlogApp')
 
-
+const bodyParser = require('body-parser')
+//Intialing bodyparser
 
 //{
 // const expressEdge = require('express-edge'); 
@@ -29,6 +30,10 @@ config({ cache: process.env.NODE_ENV === 'production' });
 app.use(engine);
 app.set('views', `${__dirname}/views`);
 
+app.use(bodyParser.json())
+//Can accept json from browser
+app.use(bodyParser.urlencoded({ extended:true }))
+
 
 app.use(express.static('public'));
 
@@ -37,6 +42,15 @@ app.get('/',(req,res) =>{
     res.render('index')
 })
 
+app.get('/posts/new',(req,res) =>{
+    res.render('create')
+})
+
+
+app.post('/posts/store',(req,res)=>{
+    console.log(req.body)
+    res.redirect('/')
+})
 
 app.get('/about',(req,res) =>{
     res.render('about')
