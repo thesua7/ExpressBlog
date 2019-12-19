@@ -24,10 +24,25 @@
 <div class="col-md-8 offset-md-2">
 <form action="/posts/store" method="POST">
 
+
+
+  
+  <div class="control-group">
+
+      <div class="form-group floating-label-from-group controls">
+    
+      <label>Username</label>
+    
+      <input type="text" name="username" class="form-control" placeholder="Username">
+    
+      </div>
+      
+      </div>
+
     <div class="control-group">
 
       <div class="form-group floating-label-from-group controls">
-     {{--  <label>Title</label>  --}}
+     <label>Title</label>
 
       <input type="text" name="title" class="form-control" placeholder="Title">
 
@@ -40,7 +55,7 @@
 
       <div class="form-group floating-label-from-group controls">
     
-      {{--  <label>Discription</label>  --}}
+      <label>Discription</label>
     
       <input type="text" name="discription" class="form-control" placeholder="Discription">
     
@@ -54,7 +69,7 @@
 
           <div class="form-group floating-label-from-group controls">
         
-          {{--  <label></label>  --}}
+          <label>Content</label>
         
           <textarea name="content" id="" cols="30" rows="10" class="form-control" placeholder="Content. . ."></textarea>
         

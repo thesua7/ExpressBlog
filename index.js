@@ -1,15 +1,19 @@
 const express = require('express');
 
-const path = require('path')
+const path = require('path');
 const app = new express();
 
 
 //npm -i save mongoose installing mongoose
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 //mongo variable
-mongoose.connect('mongodb://localhost/BlogApp')
+mongoose.connect('mongodb://localhost/BlogApp');//DB Nmae Blogapp
 
-const bodyParser = require('body-parser')
+const bodyParser = require('body-parser');
+
+
+
+const Post = require('./Database/models/post');
 //Intialing bodyparser
 
 //{
@@ -30,26 +34,44 @@ config({ cache: process.env.NODE_ENV === 'production' });
 app.use(engine);
 app.set('views', `${__dirname}/views`);
 
-app.use(bodyParser.json())
+app.use(bodyParser.json());
 //Can accept json from browser
-app.use(bodyParser.urlencoded({ extended:true }))
+app.use(bodyParser.urlencoded({ extended:true }));
 
 
 app.use(express.static('public'));
 
 
-app.get('/',(req,res) =>{
-    res.render('index')
+app.get('/',async (req,res) =>{
+
+     const posts = await Post.find({}); //Going to wait for this method to execute
+
+    console.log(posts)
+
+    res.render('index',{
+
+        posts
+
+    })
 })
 
 app.get('/posts/new',(req,res) =>{
-    res.render('create')
+    res.render('create');
 })
 
 
+
 app.post('/posts/store',(req,res)=>{
-    console.log(req.body)
-    res.redirect('/')
+    
+     Post.create(req.body,(error,post) =>{
+
+       res.redirect('/');
+
+     })
+
+
+
+
 })
 
 app.get('/about',(req,res) =>{
@@ -57,8 +79,14 @@ app.get('/about',(req,res) =>{
 })
 
 
-app.get('/post',(req,res) =>{
-    res.render('post')
+app.get('/post/:id', async (req,res) =>{ //Dynamic url passing
+
+     const post = await Post.findById(req.params.id)
+
+   
+    res.render('post',{
+        post
+    })
 })
 
 
