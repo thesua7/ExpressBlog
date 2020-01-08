@@ -6,14 +6,25 @@ const app = new express();
 
 //npm -i save mongoose installing mongoose
 const mongoose = require('mongoose');
+
+const bodyParser = require('body-parser');
+const fileUpload = require('express-fileupload');
 //mongo variable
 mongoose.connect('mongodb://localhost/BlogApp');//DB Nmae Blogapp
 
-const bodyParser = require('body-parser');
+
+
 
 
 
 const Post = require('./Database/models/post');
+
+const createPostController = require('./controllers/createPost')
+const homePageController = require('./controllers/homePage')
+const storePostController = require('./controllers/storePost')
+const getPostController = require('./controllers/getPost')
+const createUserController = require('./controllers/createUser')
+const storeUserController = require('./controllers/storeUser')
 //Intialing bodyparser
 
 //{
@@ -35,6 +46,11 @@ app.use(engine);
 app.set('views', `${__dirname}/views`);
 
 app.use(bodyParser.json());
+
+
+
+app.use(fileUpload());
+
 //Can accept json from browser
 app.use(bodyParser.urlencoded({ extended:true }));
 
@@ -42,53 +58,25 @@ app.use(bodyParser.urlencoded({ extended:true }));
 app.use(express.static('public'));
 
 
-app.get('/',async (req,res) =>{
+const storePost = require('./middleware/storePost')
 
-     const posts = await Post.find({}); //Going to wait for this method to execute
-
-    console.log(posts)
-
-    res.render('index',{
-
-        posts
-
-    })
-})
-
-app.get('/posts/new',(req,res) =>{
-    res.render('create');
-})
+app.use('/posts/store',storePost);
 
 
 
-app.post('/posts/store',(req,res)=>{
-    
-     Post.create(req.body,(error,post) =>{
+app.get('/',homePageController)
+app.get('/auth/register',createUserController)
+app.get('/posts/new',createPostController);
+app.post('/posts/store',storePostController)
+app.post('/users/register',storeUserController)
 
-       res.redirect('/');
-
-     })
-
-
-
-
-})
 
 app.get('/about',(req,res) =>{
     res.render('about')
 })
 
 
-app.get('/post/:id', async (req,res) =>{ //Dynamic url passing
-
-     const post = await Post.findById(req.params.id)
-
-   
-    res.render('post',{
-        post
-    })
-})
-
+app.get('/post/:id',getPostController)
 
 app.get('/contact',(req,res) =>{
    res.render('contact')
