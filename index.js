@@ -1,16 +1,31 @@
 const express = require('express');
-
+const expressSession = require('express-session')
+const mongoose = require('mongoose');
+const connectMongo = require('connect-mongo')
+const bodyParser = require('body-parser');
+const fileUpload = require('express-fileupload');
 const path = require('path');
 const app = new express();
 
+mongoose.connect('mongodb://localhost/BlogApp');
+const mongoStore = connectMongo(expressSession)
+
+
+app.use(expressSession({
+    secret: 'secret',
+    store: new mongoStore({
+        mongooseConnection: mongoose.connection
+    })
+}))
+
+
 
 //npm -i save mongoose installing mongoose
-const mongoose = require('mongoose');
 
-const bodyParser = require('body-parser');
-const fileUpload = require('express-fileupload');
+
+
 //mongo variable
-mongoose.connect('mongodb://localhost/BlogApp');//DB Nmae Blogapp
+//DB Nmae Blogapp
 
 
 
@@ -25,6 +40,8 @@ const storePostController = require('./controllers/storePost')
 const getPostController = require('./controllers/getPost')
 const createUserController = require('./controllers/createUser')
 const storeUserController = require('./controllers/storeUser')
+const loginController = require('./controllers/login')
+const loginUserController = require('./controllers/loginUser')
 //Intialing bodyparser
 
 //{
@@ -59,16 +76,23 @@ app.use(express.static('public'));
 
 
 const storePost = require('./middleware/storePost')
+const auth = require('./middleware/auth')
 
-app.use('/posts/store',storePost);
+//app.use('/posts/store',storePost);
+
 
 
 
 app.get('/',homePageController)
 app.get('/auth/register',createUserController)
-app.get('/posts/new',createPostController);
-app.post('/posts/store',storePostController)
-app.post('/users/register',storeUserController)
+app.get('/posts/new',auth,createPostController);
+app.get('/auth/login',loginController);
+app.get('/post/:id',getPostController);
+
+app.post('/posts/store',auth,storePost,storePostController);
+app.post('/users/register',storeUserController);
+app.post('/users/login',loginUserController)
+
 
 
 app.get('/about',(req,res) =>{
@@ -76,7 +100,7 @@ app.get('/about',(req,res) =>{
 })
 
 
-app.get('/post/:id',getPostController)
+
 
 app.get('/contact',(req,res) =>{
    res.render('contact')
