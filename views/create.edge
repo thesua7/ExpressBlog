@@ -26,18 +26,7 @@
 
 
 
-  
-  <div class="control-group">
 
-      <div class="form-group floating-label-from-group controls">
-    
-      <label>Username</label>
-    
-      <input type="text" name="username" class="form-control" placeholder="Username">
-    
-      </div>
-      
-      </div>
 
     <div class="control-group">
 
@@ -71,7 +60,7 @@
         
           <label>Content</label>
         
-          <textarea name="content" id="" cols="30" rows="10" class="form-control" placeholder="Content. . ."></textarea>
+          <textarea name="content" id="content" cols="30" rows="10" class="form-control" placeholder="Content. . ."></textarea>
         
           </div>
           
@@ -102,6 +91,30 @@
 
 
 
+
+
+  @endsection
+
+  @section('styles')
+  <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.15/dist/summernote-bs4.min.css" rel="stylesheet">
+
+
+  @endsection
+
+  @section('scripts')
+
+  <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.15/dist/summernote-bs4.min.js"></script>
+
+  <script>
+  
+  
+  $('#content').summernote()
+  
+  </script>
+
+
+
+  
 
 
   @endsection

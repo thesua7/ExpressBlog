@@ -1,38 +1,52 @@
+require('dotenv').config()
+
 const express = require('express');
 const expressSession = require('express-session')
 const mongoose = require('mongoose');
 const connectMongo = require('connect-mongo')
 const bodyParser = require('body-parser');
 const fileUpload = require('express-fileupload');
+const edge = require('edge.js')
 const path = require('path');
+const connetFlash = require('connect-flash')
+const cloudinary = require('cloudinary')
+
 const app = new express();
 
-mongoose.connect('mongodb://localhost/BlogApp');
+mongoose.connect(process.env.DB_URL);
 const mongoStore = connectMongo(expressSession)
 
 
 app.use(expressSession({
-    secret: 'secret',
+    secret: process.env.EXPRESS_SESSION_KEY,
     store: new mongoStore({
         mongooseConnection: mongoose.connection
     })
 }))
 
 
-
-//npm -i save mongoose installing mongoose
-
-
-
-//mongo variable
-//DB Nmae Blogapp
-
-
-
-
-
-
 const Post = require('./Database/models/post');
+
+const storePost = require('./middleware/storePost')
+const auth = require('./middleware/auth')
+const redirectifAuthenticated = require('./middleware/redirectifAuthenticated')
+
+
+cloudinary.config({
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+    cloud_name: process.env.CLOUDINARY_NAME
+})
+
+
+app.use('*',(req,res,next) => {
+    edge.global('auth',req.session.userId)
+    next()
+})
+app.use(connetFlash());
+
+
+
 
 const createPostController = require('./controllers/createPost')
 const homePageController = require('./controllers/homePage')
@@ -42,6 +56,7 @@ const createUserController = require('./controllers/createUser')
 const storeUserController = require('./controllers/storeUser')
 const loginController = require('./controllers/login')
 const loginUserController = require('./controllers/loginUser')
+const logoutController = require('./controllers/logout')
 //Intialing bodyparser
 
 //{
@@ -75,29 +90,29 @@ app.use(bodyParser.urlencoded({ extended:true }));
 app.use(express.static('public'));
 
 
-const storePost = require('./middleware/storePost')
-const auth = require('./middleware/auth')
-
 //app.use('/posts/store',storePost);
 
 
 
 
 app.get('/',homePageController)
-app.get('/auth/register',createUserController)
+app.get('/auth/register',redirectifAuthenticated,createUserController)
 app.get('/posts/new',auth,createPostController);
-app.get('/auth/login',loginController);
+app.get('/auth/login',redirectifAuthenticated,loginController);
 app.get('/post/:id',getPostController);
+app.get('/auth/logout',auth,logoutController);
+// app.use((req,res) => res.render('not-found'));
+
 
 app.post('/posts/store',auth,storePost,storePostController);
-app.post('/users/register',storeUserController);
+app.post('/users/register',redirectifAuthenticated,storeUserController);
 app.post('/users/login',loginUserController)
 
 
 
 app.get('/about',(req,res) =>{
     res.render('about')
-})
+}) 
 
 
 
